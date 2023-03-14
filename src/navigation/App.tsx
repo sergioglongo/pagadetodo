@@ -1,16 +1,32 @@
-import React, {useEffect, useState} from 'react';
-import {Platform, StatusBar} from 'react-native';
-// import {useFonts} from 'expo-font';
-// import { SplashScreen } from 'expo-splash-screen';
-import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import * as Font from 'expo-font';
-import { ASSETS } from '../constants/theme';
-
+import React, { useEffect, useState } from 'react';
+import { Platform, StatusBar } from 'react-native';
+import { useFonts } from 'expo-font';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Menu from './Menu';
-import {useData, ThemeProvider, TranslationProvider} from '../hooks';
+import { useData, ThemeProvider, TranslationProvider } from '../hooks';
+import { Login } from '../screens';
+
+
+const Stack = createStackNavigator()
 
 export default () => {
-  const {isDark, theme, setTheme} = useData();
+  const { isDark, theme, setTheme } = useData();
+
+  const [logged, setlogged] = useState(false)
+
+  const getAuth = async () => {
+     if (false) {
+        setlogged(true)
+      }
+      else {
+        setlogged(false)
+      }
+  }
+
+  useEffect(() => {
+    getAuth()
+  }, [logged])
 
   /* set the status bar based on isDark constant */
   useEffect(() => {
@@ -21,24 +37,17 @@ export default () => {
     };
   }, [isDark]);
 
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  useEffect(() => {
-    async function loadFonts() {
-      await Font.loadAsync({
-        'OpenSans-Light': ASSETS.OpenSansLight,
-        'OpenSans-Regular': ASSETS.OpenSansRegular,
-        'OpenSans-SemiBold': ASSETS.OpenSansSemiBold,
-        'OpenSans-ExtraBold': ASSETS.OpenSansExtraBold,
-        'OpenSans-Bold': ASSETS.OpenSansBold,
-      });
-      setFontsLoaded(true);
-    }
-    loadFonts();
-  }, []);
+  // load custom fonts
+  const [fontsLoaded] = useFonts({
+    'OpenSans-Light': theme.assets.OpenSansLight,
+    'OpenSans-Regular': theme.assets.OpenSansRegular,
+    'OpenSans-SemiBold': theme.assets.OpenSansSemiBold,
+    'OpenSans-ExtraBold': theme.assets.OpenSansExtraBold,
+    'OpenSans-Bold': theme.assets.OpenSansBold,
+  });
 
   if (!fontsLoaded) {
-    return null; // or a loading spinner
+    return null;
   }
 
   const navigationTheme = {
@@ -59,7 +68,22 @@ export default () => {
     <TranslationProvider>
       <ThemeProvider theme={theme} setTheme={setTheme}>
         <NavigationContainer theme={navigationTheme}>
-          <Menu />
+          <Stack.Navigator>
+            {logged ?
+              <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+              :
+              <>
+                <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+                {/* <Stack.Screen
+        name="ResetPasword"
+        component={ResetPasword}
+        options={{ headerShown: false }}
+      /> */}
+                <Stack.Screen name="Menu" component={Menu} options={{ headerShown: false }} />
+              </>
+            }
+          </Stack.Navigator>
+          {/* <Menu /> */}
         </NavigationContainer>
       </ThemeProvider>
     </TranslationProvider>

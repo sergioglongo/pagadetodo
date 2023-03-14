@@ -12,6 +12,8 @@ import {
 import Screens from './Screens';
 import {Block, Text, Switch, Button, Image} from '../components';
 import {useData, useTheme, useTranslation} from '../hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import { handleLogout } from '../redux/authentication';
 
 const Drawer = createDrawerNavigator();
 
@@ -71,6 +73,8 @@ const DrawerContent = (
   const [active, setActive] = useState('Home');
   const {assets, colors, gradients, sizes} = useTheme();
   const labelColor = colors.text;
+  const userData = useSelector(store => store.auth.userData)
+  const dispatch = useDispatch()
 
   const handleNavigation = useCallback(
     (to) => {
@@ -90,7 +94,7 @@ const DrawerContent = (
     // {name: t('screens.rental'), to: 'Pro', icon: assets.rental},
     {name: t('screens.profile'), to: 'Profile', icon: assets.profile},
     // {name: t('screens.settings'), to: 'Pro', icon: assets.settings},
-    {name: t('screens.register'), to: 'Register', icon: assets.register},
+    {name: t('screens.register'), to: 'Login', icon: assets.register},
     // {name: t('screens.extra'), to: 'Pro', icon: assets.extras},
   ];
 
@@ -113,10 +117,10 @@ const DrawerContent = (
           />
           <Block>
             <Text size={12} semibold>
-              {t('app.name')}
+              Bienvenido
             </Text>
             <Text size={12} semibold>
-              {t('app.native')}
+            {userData?.firstname} {userData?.lastname}
             </Text>
           </Block>
         </Block>
@@ -163,7 +167,7 @@ const DrawerContent = (
         />
 
         <Text semibold transform="uppercase" opacity={0.5}>
-          {t('menu.documentation')}
+          Sesion
         </Text>
 
         <Button
@@ -171,8 +175,10 @@ const DrawerContent = (
           justify="flex-start"
           marginTop={sizes.sm}
           marginBottom={sizes.s}
-          onPress={() =>
-            handleWebLink('https://github.com/creativetimofficial')
+          onPress={() =>{
+            dispatch(handleLogout())
+            navigation.navigate("Login")
+            }
           }>
           <Block
             flex={0}
@@ -192,7 +198,7 @@ const DrawerContent = (
             />
           </Block>
           <Text p color={labelColor}>
-            {t('menu.started')}
+            Cerrar Sesion
           </Text>
         </Button>
 
