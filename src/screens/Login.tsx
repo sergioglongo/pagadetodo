@@ -1,8 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useLayoutEffect, useState,useEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { ActivityIndicator, Alert, Animated, Linking, Platform, TouchableOpacity } from 'react-native';
+import Storage from '@react-native-async-storage/async-storage';
 
 import { useData, useTheme, useTranslation } from '../hooks';
 import * as regex from '../constants/regex';
@@ -10,11 +11,16 @@ import { Block, Button, Input, Image, Text, Checkbox } from '../components';
 import { useLazyGetTokenQuery, useLazyLoginQuery } from '../services/apiQueries';
 import { useDispatch } from 'react-redux';
 import { handleLogin } from '../redux/authentication';
-
+import { ImageBackground } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
 const isAndroid = Platform.OS === 'android';
 
-const Login = ({navigation}) => {
+interface RouterProps {
+  navigation: NavigationProp<any, any>;
+}
+
+const Login = ({ navigation }: RouterProps) => {
   const { isDark } = useData()
   const { t } = useTranslation()
   const dispatch = useDispatch()
@@ -26,16 +32,14 @@ const Login = ({navigation}) => {
     username: false,
     password: false,
   });
-  const { assets, colors, sizes } = useTheme();
+  const { assets, colors, sizes, gradients } = useTheme();
   const [getToken, { data: token, isSuccess: isSuccessToken, isLoading: isLoadingToken, isError: isErrorToken, error: errorToken }] = useLazyGetTokenQuery()
   const [getLogin, { data: login, isSuccess: isSuccessLogin, isLoading: isLoadingLogin, isError: isErrorLogin, error: errorLogin }] = useLazyLoginQuery()
 
-
-  useEffect(() => {
-    getToken()  
+  useLayoutEffect(() => {
+    getToken()
   }, [])
   
-
   if (isErrorToken) {
     console.log("No se obtuvo token", errorToken)
   }
@@ -43,7 +47,10 @@ const Login = ({navigation}) => {
   if (isSuccessLogin) {
     if (login.result) {
       dispatch(handleLogin({token: token.access_token, sessionid: login.result.login.sessionid, userData: login.result.login}))
-      navigation.replace("Menu")
+      navigation.reset({
+              index: 0,
+              routes: [{ name: 'Menu' }]
+            })
     } else {
     console.log("Datos erroneos", login)
     }
@@ -62,25 +69,25 @@ const Login = ({navigation}) => {
     if (!loginData?.password || !loginData?.username) {
       return;
     } else {
-      if(isSuccessToken){
-        getLogin({token: token.access_token, username: loginData?.username, password: loginData?.password})
+      if (isSuccessToken) {
+        getLogin({ token: token.access_token, username: loginData?.username, password: loginData?.password })
       }
     }
   };
 
   return (
-    <Block safe marginTop={sizes.md}>
-      <Block paddingHorizontal={sizes.s}>
-        <Block flex={0} style={{ zIndex: 0 }}>      
-           <Image 
-           background
-           resizeMode="contain"
-            source={assets.logo} 
+    <Block safe >
+      <Block paddingHorizontal={sizes.s} gradient={gradients.menubar}>
+        <Block flex={0} style={{ zIndex: 0 }} paddingHorizontal="5%">
+          <Image
+            background
+            resizeMode="contain"
+            source={assets.logo}
             padding={sizes.sm}
             radius={sizes.cardRadius}
             height={sizes.height * 0.3}
-            >
-            </Image> 
+          >
+          </Image>
         </Block>
         {/* register form */}
         <Block
@@ -97,15 +104,15 @@ const Login = ({navigation}) => {
             <Block
               blur
               flex={0}
-              intensity={90}
+              intensity={60}
               radius={4}
               overflow="hidden"
               justify="space-evenly"
               tint={colors.blurTint}
               paddingVertical={sizes.sm}
-              style={{borderWidth:0.5, borderColor:'#0B3D5C'}}>
+              style={{ borderWidth: 0.5, borderColor: '#fda97b' }}>
               {/* form inputs */}
-              <Block paddingHorizontal={sizes.sm}>
+              <Block paddingHorizontal={sizes.m}>
                 <Input
                   value={loginData.username}
                   autoCapitalize="none"
@@ -144,11 +151,11 @@ const Login = ({navigation}) => {
                 marginVertical={sizes.s}
                 marginHorizontal={sizes.sm}
                 onPress={loginHandler}
-                color={'#44d62c'}>
+                color={'#fc5c04'}>
                 {isLoadingLogin ?
-                  <ActivityIndicator size={20} color='#0B3D5C'/>
+                  <ActivityIndicator size={20} color='#1c54a4' />
                   :
-                  <Text bold primary transform="uppercase" color={'#0B3D5C'}>
+                  <Text bold primary transform="uppercase" color={'#1c54a4'}>
                     Ingresar
                   </Text>
                 }

@@ -140,3 +140,34 @@ export interface INotification {
     | 'extras'
     | 'office';
 }
+
+export interface UserData {
+  id: string;
+  last_login_time?: any ;
+  support_start_date?: any;
+  support_end_date?: any;
+  cryptmode?: string;
+  comisionid: string;
+  contact_no?: string;
+  contactid: string;
+  cuentacorriente?: number;
+  cuit?: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  mailingstreet?: string;
+  mailingcity?: string;
+  mailingstate?: string;
+  mailingcountry?: string;
+  bolsa: string;
+  sessionid: string;
+}
+
+export interface StoreAuth {
+  auth: {
+    sessionid: string;
+    token: string;
+    userData: UserData;
+    logged: boolean;
+  }
+}
