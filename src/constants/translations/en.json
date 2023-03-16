@@ -49,8 +49,8 @@
     }
   },
   "app": {
-    "name": "Soft UI",
-    "fullname": "Soft UI Kit",
+    "name": "Pagadetodo",
+    "fullname": "Pagadetodo",
     "native": "React Native",
     "link": "creative-tim.com"
   },

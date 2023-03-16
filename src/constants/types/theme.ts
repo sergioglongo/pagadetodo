@@ -116,6 +116,7 @@ export interface ThemeGradients {
   light?: string[];
   dark?: string[];
   gray?: string[];
+  menubar?: string[];
   danger?: string[];
   warning?: string[];
   success?: string[];

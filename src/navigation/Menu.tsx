@@ -1,5 +1,6 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Alert, Animated, Linking, StyleSheet} from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Linking, StyleSheet } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
 
 import {
   useIsDrawerOpen,
@@ -10,14 +11,23 @@ import {
 } from '@react-navigation/drawer';
 
 import Screens from './Screens';
-import {Block, Text, Switch, Button, Image} from '../components';
-import {useData, useTheme, useTranslation} from '../hooks';
+import { Block, Text, Switch, Button, Image } from '../components';
+import { useData, useTheme, useTranslation } from '../hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import { handleLogout, loginState } from '../redux/authentication';
+import { StoreAuth, UserData } from '../constants/types/index'
+import Storage from '@react-native-async-storage/async-storage';
+
+interface RouterProps {
+  navigation: NavigationProp<any, any>;
+}
 
 const Drawer = createDrawerNavigator();
 
 /* drawer menu screens navigation */
 const ScreensStack = () => {
-  const {colors} = useTheme();
+  const { colors } = useTheme();
+  // const isDrawerOpen = useIsDrawerOpen();
   const isDrawerOpen = useIsDrawerOpen();
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -33,7 +43,7 @@ const ScreensStack = () => {
 
   const animatedStyle = {
     borderRadius: borderRadius,
-    transform: [{scale: scale}],
+    transform: [{ scale: scale }],
   };
 
   useEffect(() => {
@@ -65,12 +75,14 @@ const ScreensStack = () => {
 const DrawerContent = (
   props: DrawerContentComponentProps<DrawerContentOptions>,
 ) => {
-  const {navigation} = props;
-  const {t} = useTranslation();
-  const {isDark, handleIsDark} = useData();
+  const { navigation } = props;
+  const { t } = useTranslation();
+  const { isDark, handleIsDark } = useData();
   const [active, setActive] = useState('Home');
-  const {assets, colors, gradients, sizes} = useTheme();
+  const { assets, colors, gradients, sizes } = useTheme();
   const labelColor = colors.text;
+  const userData = useSelector((store: StoreAuth) => store.auth.userData)
+  const dispatch = useDispatch()
 
   const handleNavigation = useCallback(
     (to) => {
@@ -79,18 +91,17 @@ const DrawerContent = (
     },
     [navigation, setActive],
   );
-
   const handleWebLink = useCallback((url) => Linking.openURL(url), []);
 
   // screen list for Drawer menu
   const screens = [
-    {name: t('screens.home'), to: 'Home', icon: assets.home},
-    {name: t('screens.components'), to: 'Components', icon: assets.components},
-    {name: t('screens.articles'), to: 'Articles', icon: assets.document},
+    { name: t('screens.home'), to: 'Home', icon: assets.home },
+    { name: t('screens.components'), to: 'Components', icon: assets.components },
+    { name: t('screens.articles'), to: 'Articles', icon: assets.document },
     // {name: t('screens.rental'), to: 'Pro', icon: assets.rental},
-    {name: t('screens.profile'), to: 'Profile', icon: assets.profile},
+    { name: t('screens.profile'), to: 'Profile', icon: assets.profile },
     // {name: t('screens.settings'), to: 'Pro', icon: assets.settings},
-    {name: t('screens.register'), to: 'Register', icon: assets.register},
+    { name: t('screens.register'), to: 'Login', icon: assets.register },
     // {name: t('screens.extra'), to: 'Pro', icon: assets.extras},
   ];
 
@@ -100,23 +111,27 @@ const DrawerContent = (
       scrollEnabled
       removeClippedSubviews
       renderToHardwareTextureAndroid
-      contentContainerStyle={{paddingBottom: sizes.padding}}>
-      <Block paddingHorizontal={sizes.padding}>
-        <Block flex={0} row align="center" marginBottom={sizes.l}>
-          <Image
-            radius={0}
-            width={33}
-            height={33}
-            color={colors.text}
-            source={assets.logo}
-            marginRight={sizes.sm}
-          />
-          <Block>
-            <Text size={12} semibold>
-              {t('app.name')}
+      contentContainerStyle={{ paddingBottom: sizes.padding }}>
+      <Block paddingHorizontal={sizes.padding} >
+        <Block flex={0} row marginBottom={sizes.l} >
+
+
+          <Block marginTop={5} >
+            <Block >
+              <Image
+                radius={0}
+                width={'auto'}
+                height={25}
+                // color={colors.text}
+                source={assets.logo}
+              // marginRight={sizes.sm}
+              />
+            </Block>
+            <Text size={16} semibold align="center">
+              Bienvenido
             </Text>
-            <Text size={12} semibold>
-              {t('app.native')}
+            <Text size={16} semibold align="center">
+              {userData?.firstname} {userData?.lastname}
             </Text>
           </Block>
         </Block>
@@ -153,7 +168,6 @@ const DrawerContent = (
             </Button>
           );
         })}
-
         <Block
           flex={0}
           height={1}
@@ -161,18 +175,22 @@ const DrawerContent = (
           marginVertical={sizes.sm}
           gradient={gradients.menu}
         />
-
         <Text semibold transform="uppercase" opacity={0.5}>
-          {t('menu.documentation')}
+          Sesion
         </Text>
-
         <Button
           row
           justify="flex-start"
           marginTop={sizes.sm}
           marginBottom={sizes.s}
-          onPress={() =>
-            handleWebLink('https://github.com/creativetimofficial')
+          onPress={() => {
+            dispatch(handleLogout({}))
+            Storage.setItem('logged', 'false')
+            // navigation.reset({
+            //   index: 0,
+            //   routes: [{ name: 'Login' }]
+            // })
+          }
           }>
           <Block
             flex={0}
@@ -192,10 +210,9 @@ const DrawerContent = (
             />
           </Block>
           <Text p color={labelColor}>
-            {t('menu.started')}
+            Cerrar Sesion
           </Text>
         </Button>
-
         <Block row justify="space-between" marginTop={sizes.sm}>
           <Text color={labelColor}>{t('darkMode')}</Text>
           <Switch
@@ -212,15 +229,28 @@ const DrawerContent = (
 };
 
 /* drawer menu navigation */
-export default () => {
-  const {gradients} = useTheme();
+export default ({ navigation }: RouterProps) => {
+  const { gradients } = useTheme();
+  const dispatch = useDispatch()
+  
+  const isLogged = useSelector((store:StoreAuth) => store.auth.logged)
+
+  useEffect(() => {
+    if (!isLogged) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }]
+      })
+    }
+  }, [isLogged])
+  
 
   return (
-    <Block gradient={gradients.light}>
+    <Block gradient={gradients.menubar}>
       <Drawer.Navigator
         drawerType="slide"
         overlayColor="transparent"
-        sceneContainerStyle={{backgroundColor: 'transparent'}}
+        sceneContainerStyle={{ backgroundColor: 'transparent' }}
         drawerContent={(props) => <DrawerContent {...props} />}
         drawerStyle={{
           flex: 1,

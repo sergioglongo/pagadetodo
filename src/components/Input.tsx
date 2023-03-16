@@ -79,7 +79,7 @@ const Input = ({
     ? color
     : colorIndex
     ? colors?.[colorIndex]
-    : colors.gray;
+    : colors.black;
 
   const inputBoxStyles = StyleSheet.flatten([
     style,

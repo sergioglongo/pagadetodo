@@ -14,11 +14,11 @@ export const COLORS: ThemeColors = {
 
   // base colors
   /** UI color for #primary */
-  primary: '#CB0C9F',
+  primary: '#fc5c04',
   /** UI color for #secondary */
-  secondary: '#627594', // '#8392AB',
+  secondary: '#fda97b', // '#8392AB',
   /** UI color for #tertiary */
-  tertiary: '#E8AE4C',
+  tertiary: '#973601',
 
   // non-colors
   black: '#252F40',
@@ -50,7 +50,7 @@ export const COLORS: ThemeColors = {
   overlay: 'rgba(0,0,0,0.3)',
 
   /** UI color for input borderColor on focus */
-  focus: '#E293D3',
+  focus: '#fc5c04',
   input: '#252F40',
 
   /** UI color for switch checked/active color */
@@ -73,16 +73,17 @@ export const COLORS: ThemeColors = {
   blurTint: 'light',
 
   /** product link color */
-  link: '#CB0C9F',
+  link: '#fc5c04',
 };
 
 export const GRADIENTS: ThemeGradients = {
-  primary: ['#FF0080', '#7928CA'],
+  primary: ['#fc5c04', '#fda97b'],
   secondary: ['#A8B8D8', '#627594'],
   info: ['#21D4FD', '#2152FF'],
   success: ['#98EC2D', '#17AD37'],
   warning: ['#FBCF33', '#F53939'],
   danger: ['#FF667C', '#EA0606'],
+  menubar: ['#FBCF33', '#fc5c04'],
 
   light: ['#EBEFF4', '#CED4DA'],
   dark: ['#3A416F', '#141727'],
