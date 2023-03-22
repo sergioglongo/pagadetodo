@@ -252,4 +252,18 @@ const Home = () => {
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 16
+  },
+  section: {
+    flex: 1
+  },
+  rowDirection: {
+    flexDirection: "row"
+  }
+})
+
 export default Home;
