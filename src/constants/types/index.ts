@@ -171,3 +171,25 @@ export interface StoreAuth {
     logged: boolean;
   }
 }
+
+export interface Products {
+  success: boolean;
+  result: [{
+    productid: string;
+    productname: string;
+    tarjeta_id: string;
+    id_facturador: string;
+    id_servicio: string;
+    crmid: string;
+  }]
+}
+export interface Product {
+    productid: string;
+    productname: string;
+    tarjeta_id: string;
+    id_facturador: string;
+    id_servicio: string;
+    crmid: string;
+}
+
+

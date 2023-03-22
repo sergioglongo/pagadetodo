@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-createApi;
+
 export const apiToken = createApi({
   reducerPath: 'apiToken',
 
@@ -34,7 +34,7 @@ export const {useLazyGetTokenQuery} = apiToken;
 export const apiQueries = createApi({
   reducerPath: 'apiQueries',
 
-  tagTypes: [],
+  tagTypes: ['saldo'],
   //    invalidatesTags: ['billdata', 'devicedata', 'energy', 'consumo']
 
   baseQuery: fetchBaseQuery({
@@ -56,8 +56,49 @@ export const apiQueries = createApi({
           p_password: data.password
         }).toString()
       })
+    }),
+    getProducts: builder.query({
+      query: (data) => ((console.log("data:",data)),{
+        url: '/',
+        method: 'POST',
+        body: new URLSearchParams({
+          _operation: 'getProducts',
+          access_token: data.token,
+          pvid: data.operatorid,
+          sessionid: data.sessionid
+        }).toString()
+      })
+    }),
+    doCarga: builder.mutation({
+      query: (data) => ((console.log("data:",data)),{
+        url: '/',
+        method: 'POST',
+        body: new URLSearchParams({
+          _operation: 'doCarga',
+          access_token: data.access_token,
+          pvid: data.pvid,
+          sessionid: data.sessionid,
+          productid: data.productid,
+          numero: data.numero,
+          importe: data.importe
+        }).toString(),
+        invalidatesTags: ['saldo']
+      })
+    }),
+    getSaldoCliente: builder.query({
+      query: (data) => ({
+        url: '/',
+        method: 'POST',
+        body: new URLSearchParams({
+          _operation: 'getSaldoCliente',
+          access_token: data.token,
+          pvid: data.operatorid,
+          sessionid: data.sessionid
+        }).toString(),
+        providesTags: ['saldo']
+      })
     })
   })
 });
 
-export const {useLazyLoginQuery} = apiQueries;
+export const {useLazyLoginQuery, useGetProductsQuery, useDoCargaMutation, useLazyGetSaldoClienteQuery} = apiQueries;
